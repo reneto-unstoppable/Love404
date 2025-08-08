@@ -13,6 +13,7 @@ export function MatchFailClient() {
   useEffect(() => {
     // Play sad trombone sound
     const playSound = async () => {
+      // @ts-ignore
       await Tone.start();
       const synth = new Tone.Synth().toDestination();
       const now = Tone.now();

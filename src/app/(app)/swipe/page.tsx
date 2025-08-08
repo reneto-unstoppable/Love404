@@ -29,13 +29,19 @@ export default function SwipePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [showPopup, setShowPopup] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     const chaosTimer = setTimeout(() => {
       setShowPopup(true);
     }, 10000); // Popup appears after 10 seconds
     return () => clearTimeout(chaosTimer);
-  }, [currentIndex]);
+  }, [currentIndex, isClient]);
 
 
   const handleSwipe = () => {
@@ -77,7 +83,7 @@ export default function SwipePage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] gap-8">
-      <ChaoticPopup isOpen={showPopup} onOpenChange={setShowPopup} />
+      {isClient && <ChaoticPopup isOpen={showPopup} onOpenChange={setShowPopup} />}
       <h1 className="font-headline text-3xl text-center -rotate-2">Swipe Your Dignity Away</h1>
       <SwipeCard
         key={currentIndex}

@@ -19,9 +19,11 @@ export default function LoginPage() {
   const { login } = useUser();
   const [username, setUsername] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     setIsClient(true);
+    setYear(new Date().getFullYear());
   }, []);
 
   const handleAnonymousLogin = () => {
@@ -94,7 +96,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
        <footer className="absolute bottom-4 text-center text-muted-foreground text-xs z-10 font-body">
-        <p>&copy; {isClient ? new Date().getFullYear() : '2024'} 404 Haunting Inc. All rights reversed.</p>
+        <p>&copy; {year} 404 Haunting Inc. All rights reversed.</p>
         <p>We are not liable for any emotional damage or accidental happiness.</p>
       </footer>
     </main>

@@ -9,8 +9,15 @@ const ConfettiPiece = ({ style }: { style: React.CSSProperties }) => (
 
 export function MatchFailClient() {
   const [confetti, setConfetti] = useState<React.CSSProperties[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     // Play sad trombone sound
     const playSound = async () => {
       // @ts-ignore
@@ -49,7 +56,11 @@ export function MatchFailClient() {
         document.head.removeChild(styleSheet);
     };
 
-  }, []);
+  }, [isClient]);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="absolute inset-0 overflow-hidden z-0">

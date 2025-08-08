@@ -66,7 +66,7 @@ export default function CreateProfilePage() {
       `blur(1px)`,
     ];
     setPicStyle({ filter: filters.join(' ') });
-    const newPic = `https://placehold.co/200x200.png?t=${new Date().getTime()}`;
+    const newPic = `https://placehold.co/200x200.png?t=${Date.now()}`;
     setProfilePic(newPic);
     toast({ title: 'Behold!', description: 'A face not even a mother could debug.' });
   };

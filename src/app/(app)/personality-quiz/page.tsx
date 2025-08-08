@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,8 +35,9 @@ export default function PersonalityQuizPage() {
   });
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (isAnalyzing) {
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         setProgress(prev => {
           if (prev >= 97) {
             clearInterval(timer);
@@ -44,12 +46,15 @@ export default function PersonalityQuizPage() {
           return prev + Math.floor(Math.random() * 5);
         });
       }, 300);
-      return () => clearInterval(timer);
     }
+    return () => {
+      if(timer) clearInterval(timer);
+    };
   }, [isAnalyzing]);
 
   async function onSubmit(values: z.infer<typeof quizSchema>) {
     setIsAnalyzing(true);
+    setProgress(13); // Reset progress
     try {
       const result = await personalityAnalysis(values);
       setAnalysisResult(result);
@@ -176,11 +181,13 @@ export default function PersonalityQuizPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="font-headline text-2xl text-primary">Analysis Complete!</AlertDialogTitle>
-            <AlertDialogDescription className="text-center pt-4">
-              <p className="text-lg text-foreground">You are</p>
-              <p className="text-7xl font-bold text-destructive my-2">{analysisResult?.compatibilityScore}%</p>
-              <p className="text-lg text-foreground">compatible with happiness.</p>
-              <p className="text-muted-foreground mt-6 text-base">{analysisResult?.analysis}</p>
+            <AlertDialogDescription asChild>
+              <div className="text-center pt-4">
+                <div className="text-lg text-foreground">You are</div>
+                <div className="text-7xl font-bold text-destructive my-2">{analysisResult?.compatibilityScore}%</div>
+                <div className="text-lg text-foreground">compatible with happiness.</div>
+                <div className="text-muted-foreground mt-6 text-base">{analysisResult?.analysis}</div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

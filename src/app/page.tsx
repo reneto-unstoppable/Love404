@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Ghost, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,11 @@ export default function LoginPage() {
   const { toast } = useToast();
   const { login } = useUser();
   const [username, setUsername] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleAnonymousLogin = () => {
     const adj = memeAdjectives[Math.floor(Math.random() * memeAdjectives.length)];
@@ -77,13 +82,13 @@ export default function LoginPage() {
               <span className="bg-card px-2 text-muted-foreground">Or embrace chaos</span>
             </div>
           </div>
-          <Button variant="secondary" className="w-full font-headline" onClick={handleAnonymousLogin}>
+          <Button variant="secondary" className="w-full font-headline" onClick={handleAnonymousLogin} disabled={!isClient}>
             <Ghost className="mr-2 animate-bounce" /> Go Anonymous
           </Button>
         </CardContent>
       </Card>
        <footer className="absolute bottom-4 text-center text-muted-foreground text-xs z-10 font-body">
-        <p>&copy; {new Date().getFullYear()} 404 Haunting Inc. All rights reversed.</p>
+        <p>&copy; {isClient ? new Date().getFullYear() : ''} 404 Haunting Inc. All rights reversed.</p>
         <p>We are not liable for any emotional damage or accidental happiness.</p>
       </footer>
     </main>

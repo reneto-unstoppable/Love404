@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/hooks/use-user';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const profileSchema = z.object({
@@ -35,16 +35,31 @@ export default function CreateProfilePage() {
   const { setProfile, getProfile } = useUser();
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [picStyle, setPicStyle] = useState({});
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
-    defaultValues: getProfile() || {
+    defaultValues: {
       displayName: '',
       emotionalAge: [3],
       conspiracyTheory: '',
       loveAtFirstSite: false,
     },
   });
+
+  useEffect(() => {
+    if (isClient) {
+      const savedProfile = getProfile();
+      if (savedProfile) {
+        form.reset(savedProfile);
+      }
+    }
+  }, [isClient, form, getProfile]);
+
 
   const generatePic = () => {
     const filters = [
@@ -66,6 +81,10 @@ export default function CreateProfilePage() {
       description: "We've stored your questionable life choices.",
     });
     router.push('/personality-quiz');
+  }
+
+  if (!isClient) {
+    return null; // Or a loading spinner
   }
 
   return (

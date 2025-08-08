@@ -20,13 +20,14 @@ type User = {
 const useStore = <T, F>(
   key: string,
   initialState: T | (() => T)
-): [T, (value: F) => void] => {
+): [T, (value: F) => void, boolean] => {
   const [state, setState] = useState<T>(initialState);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    let value;
     try {
-      const value = localStorage.getItem(key);
+      value = localStorage.getItem(key);
       if (value) {
         setState(JSON.parse(value));
       }
@@ -47,25 +48,12 @@ const useStore = <T, F>(
     }
   }, [key, state]);
 
-  // Return initial state until the component is initialized
-  if (!isInitialized) {
-      const s = typeof initialState === 'function' ? (initialState as () => T)() : initialState;
-      // We can't return the setter, as it would be stale
-      const dummySetter = () => {};
-      return [s, dummySetter as (value: F) => void];
-  }
 
-
-  return [state, setStoredState];
+  return [state, setStoredState, isInitialized];
 };
 
 export const useUser = () => {
-  const [user, setUser] = useStore<User, User | null>('user', { username: null });
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const [user, setUser, isInitialized] = useStore<User, User | null>('user', { username: null });
 
   const login = (username: string) => {
     setUser({ username });
@@ -73,19 +61,27 @@ export const useUser = () => {
 
   const logout = () => {
     setUser(null);
-    // also remove profile from localstorage
     localStorage.removeItem('user');
   };
   
   const setProfile = (profileData: UserProfile) => {
     setUser({ ...user, profile: profileData });
-  }
+  };
 
   const getProfile = useCallback(() => {
-     if (!isClient) return null;
+     if (!isInitialized) return null;
      return user.profile || null;
-  }, [isClient, user.profile]);
+  }, [isInitialized, user.profile]);
 
 
-  return { user, username: user?.username, login, logout, setProfile, getProfile, isAuthenticated: !!user?.username, isClient };
+  return { 
+    user, 
+    username: user?.username, 
+    login, 
+    logout, 
+    setProfile, 
+    getProfile, 
+    isAuthenticated: !!user?.username, 
+    isClient: isInitialized 
+  };
 };

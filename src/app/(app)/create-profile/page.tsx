@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/hooks/use-user';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const profileSchema = z.object({
   displayName: z.string().optional(),
@@ -32,7 +33,7 @@ const profileSchema = z.object({
 export default function CreateProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setProfile, getProfile, isClient } = useUser();
+  const { user, setProfile, isClient } = useUser();
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [picStyle, setPicStyle] = useState({});
 
@@ -47,16 +48,13 @@ export default function CreateProfilePage() {
   });
 
   useEffect(() => {
-    if (isClient) {
-      const savedProfile = getProfile();
-      if (savedProfile) {
-        form.reset(savedProfile);
-        if(savedProfile.profilePic) {
-            setProfilePic(savedProfile.profilePic);
-        }
+    if (user?.profile) {
+      form.reset(user.profile);
+      if(user.profile.profilePic) {
+          setProfilePic(user.profile.profilePic);
       }
     }
-  }, [isClient, form, getProfile]);
+  }, [user, form]);
 
 
   const generatePic = () => {
@@ -83,7 +81,31 @@ export default function CreateProfilePage() {
   }
 
   if (!isClient) {
-    return null; // Or a loading spinner
+    return (
+        <div className="flex justify-center items-start py-8">
+            <Card className="w-full max-w-2xl">
+                <CardHeader>
+                    <Skeleton className="h-8 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent className="space-y-8">
+                     <div className="flex flex-col md:flex-row gap-8 items-center">
+                        <div className="space-y-2 text-center">
+                            <Skeleton className="w-48 h-48 rounded-full" />
+                            <Skeleton className="h-10 w-48" />
+                        </div>
+                        <div className="space-y-6 flex-1">
+                           <Skeleton className="h-10 w-full" />
+                           <Skeleton className="h-10 w-full" />
+                        </div>
+                     </div>
+                     <Skeleton className="h-10 w-full" />
+                     <Skeleton className="h-10 w-full" />
+                     <Skeleton className="h-12 w-full" />
+                </CardContent>
+            </Card>
+        </div>
+    );
   }
 
   return (

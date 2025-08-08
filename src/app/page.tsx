@@ -82,13 +82,19 @@ export default function LoginPage() {
               <span className="bg-card px-2 text-muted-foreground">Or embrace chaos</span>
             </div>
           </div>
-          <Button variant="secondary" className="w-full font-headline" onClick={handleAnonymousLogin} disabled={!isClient}>
-            <Ghost className="mr-2 animate-bounce" /> Go Anonymous
-          </Button>
+          {isClient ? (
+            <Button variant="secondary" className="w-full font-headline" onClick={handleAnonymousLogin}>
+              <Ghost className="mr-2 animate-bounce" /> Go Anonymous
+            </Button>
+          ) : (
+             <Button variant="secondary" className="w-full font-headline" disabled>
+              <Ghost className="mr-2" /> Loading...
+            </Button>
+          )}
         </CardContent>
       </Card>
        <footer className="absolute bottom-4 text-center text-muted-foreground text-xs z-10 font-body">
-        <p>&copy; {isClient ? new Date().getFullYear() : ''} 404 Haunting Inc. All rights reversed.</p>
+        <p>&copy; {isClient ? new Date().getFullYear() : '2024'} 404 Haunting Inc. All rights reversed.</p>
         <p>We are not liable for any emotional damage or accidental happiness.</p>
       </footer>
     </main>

@@ -1,11 +1,22 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
+type Profile = {
+  name: string;
+  age: number;
+  bio: string;
+  image: string;
+  spiritVegetable: string;
+  loveLanguage: 'Sarcasm' | 'Ghosting';
+}
 
 type UserProfile = {
   displayName?: string;
   emotionalAge?: number[];
   conspiracyTheory?: string;
+
   spiritVegetable?: string;
   loveLanguage?: 'Sarcasm' | 'Ghosting';
   loveAtFirstSite?: boolean;
@@ -15,6 +26,7 @@ type UserProfile = {
 type User = {
   username: string | null;
   profile?: UserProfile;
+  likedProfiles?: Profile[];
 };
 
 const useStore = <T, F>(
@@ -53,10 +65,10 @@ const useStore = <T, F>(
 };
 
 export const useUser = () => {
-  const [user, setUser, isInitialized] = useStore<User, User | null>('user', { username: null });
+  const [user, setUser, isInitialized] = useStore<User, User | null>('user', { username: null, likedProfiles: [] });
 
   const login = (username: string) => {
-    setUser({ username });
+    setUser({ username, likedProfiles: [] });
   };
 
   const logout = () => {
@@ -66,6 +78,13 @@ export const useUser = () => {
   
   const setProfile = (profileData: UserProfile) => {
     setUser({ ...user, profile: profileData });
+  };
+
+  const addLikedProfile = (profile: Profile) => {
+    const currentLiked = user?.likedProfiles || [];
+    if (!currentLiked.find(p => p.name === profile.name)) {
+      setUser({ ...user, likedProfiles: [...currentLiked, profile] });
+    }
   };
 
   const getProfile = useCallback(() => {
@@ -80,8 +99,10 @@ export const useUser = () => {
     login, 
     logout, 
     setProfile, 
+    addLikedProfile,
     getProfile, 
     isAuthenticated: !!user?.username, 
     isClient: isInitialized 
   };
 };
+

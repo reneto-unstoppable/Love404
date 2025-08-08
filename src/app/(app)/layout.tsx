@@ -17,7 +17,7 @@ import {
 import { useUser } from '@/hooks/use-user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Bot, Ghost, LogOut, ShieldQuestion, UserSquare } from 'lucide-react';
+import { Bot, Ghost, Heart, LogOut, ShieldQuestion, UserSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -26,10 +26,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.profile?.profilePic) {
+    if (isClient && user?.profile?.profilePic) {
       setAvatarUrl(user.profile.profilePic);
     }
-  }, [user]);
+  }, [isClient, user]);
 
   const handleLogout = () => {
     logout();
@@ -74,6 +74,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 Swipe Failures
               </SidebarMenuButton>
             </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => router.push('/liked')} tooltip="Your Collection of Disappointments">
+                <Heart />
+                Liked Profiles
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton onClick={() => router.push('/chatbot')} tooltip="Terrible Advice Here">
                 <Bot />
@@ -85,7 +91,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
             <div className="flex items-center gap-3">
                  <Avatar>
-                    {isClient && avatarUrl && <AvatarImage src={avatarUrl} data-ai-hint="glitched face" />}
+                    {avatarUrl && <AvatarImage src={avatarUrl} data-ai-hint="glitched face" />}
                     <AvatarFallback>{getInitials(username)}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col overflow-hidden">

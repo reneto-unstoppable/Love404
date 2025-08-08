@@ -9,6 +9,7 @@ import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ChaoticPopup } from '@/components/chaotic-popup';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUser } from '@/hooks/use-user';
 
 const fakeProfiles = [
   { name: 'Glarth', age: 420, bio: 'Just a consciousness trapped in a meat-suit, looking for another to buffer with.', image: 'https://placehold.co/400x600.png', spiritVegetable: 'Confused Turnip', loveLanguage: 'Sarcasm' },
@@ -25,13 +26,21 @@ const unmatchReasons = [
     "Unmatched. Reason: Tuesday.",
 ];
 
+const dislikeReplies = [
+    "And this is why you're single.",
+    "They were probably a bot anyway. Probably.",
+    "Another one bites the dust. And another one gone, and another one gone...",
+    "You have successfully avoided a potentially mediocre conversation.",
+    "Good choice. Their favorite font was Comic Sans.",
+]
+
 export default function SwipePage() {
   const [profiles, setProfiles] = useState(fakeProfiles);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
   const [showPopup, setShowPopup] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const { addLikedProfile } = useUser();
 
   useEffect(() => {
     setIsClient(true);
@@ -39,24 +48,42 @@ export default function SwipePage() {
 
   useEffect(() => {
     if (!isClient) return;
-    const chaosTimer = setTimeout(() => {
-      setShowPopup(true);
-    }, 10000); // Popup appears after 10 seconds
-    return () => clearTimeout(chaosTimer);
+    const timer = setTimeout(() => {
+        if(document.visibilityState === 'visible'){
+            setShowPopup(true);
+        }
+    }, 10000);
+    return () => clearTimeout(timer);
   }, [currentIndex, isClient]);
 
-
-  const handleSwipe = () => {
-    const nextIndex = (currentIndex + 1);
-    if (nextIndex >= profiles.length) {
-        // Reshuffle and start over
+  const advanceToNextProfile = () => {
+     setCurrentIndex(prevIndex => {
+      const nextIndex = prevIndex + 1;
+      if (nextIndex >= profiles.length) {
         setProfiles([...profiles].sort(() => Math.random() - 0.5));
-        setCurrentIndex(0);
-    } else {
-        setCurrentIndex(nextIndex);
-    }
-    const outcome = Math.random() > 0.5 ? 'NULL' : 'INCOMPATIBLE';
-    router.push(`/match-fail?outcome=${outcome}`);
+        return 0;
+      }
+      return nextIndex;
+    });
+  }
+
+  const handleSwipeLeft = () => {
+    const reply = dislikeReplies[Math.floor(Math.random() * dislikeReplies.length)];
+    toast({
+        title: "Rejected!",
+        description: reply,
+    });
+    advanceToNextProfile();
+  };
+  
+  const handleSwipeRight = () => {
+    const likedProfile = profiles[currentIndex];
+    addLikedProfile(likedProfile);
+     toast({
+        title: "Liked!",
+        description: `You've added ${likedProfile.name} to your collection of potential disappointments.`,
+    });
+    advanceToNextProfile();
   };
 
   const unmatchRoulette = () => {
@@ -66,7 +93,6 @@ export default function SwipePage() {
         title: "Unmatch Roulette!",
         description: reason
     });
-    // reshuffle all profiles
     setProfiles([...profiles].sort(() => Math.random() - 0.5));
     setCurrentIndex(0);
   }
@@ -107,8 +133,8 @@ export default function SwipePage() {
       <SwipeCard
         key={currentIndex}
         profile={profiles[currentIndex]}
-        onSwipeLeft={handleSwipe}
-        onSwipeRight={handleSwipe}
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
       />
       <div className="mt-4">
         <Button variant="outline" onClick={unmatchRoulette} className="font-headline rotate-1">

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ChaoticPopup } from '@/components/chaotic-popup';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const fakeProfiles = [
   { name: 'Glarth', age: 420, bio: 'Just a consciousness trapped in a meat-suit, looking for another to buffer with.', image: 'https://placehold.co/400x600.png', spiritVegetable: 'Confused Turnip', loveLanguage: 'Sarcasm' },
@@ -70,7 +71,21 @@ export default function SwipePage() {
     setCurrentIndex(0);
   }
 
-  if (!isClient || !profiles[currentIndex]) {
+  if (!isClient) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] gap-8">
+        <h1 className="font-headline text-3xl text-center -rotate-2">Swipe Your Dignity Away</h1>
+        <div className="relative w-full max-w-sm h-[550px] mx-auto">
+            <Skeleton className="w-full h-full rounded-2xl" />
+        </div>
+         <div className="mt-4">
+            <Skeleton className="h-12 w-48" />
+        </div>
+      </div>
+    )
+  }
+  
+  if (!profiles[currentIndex]) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
         <h2 className="font-headline text-2xl">You've run out of people to disappoint.</h2>
@@ -87,7 +102,7 @@ export default function SwipePage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] gap-8">
-      {isClient && <ChaoticPopup isOpen={showPopup} onOpenChange={setShowPopup} />}
+      <ChaoticPopup isOpen={showPopup} onOpenChange={setShowPopup} />
       <h1 className="font-headline text-3xl text-center -rotate-2">Swipe Your Dignity Away</h1>
       <SwipeCard
         key={currentIndex}

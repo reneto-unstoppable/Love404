@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -96,7 +97,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
        <footer className="absolute bottom-4 text-center text-muted-foreground text-xs z-10 font-body">
-        <p>&copy; {year} 404 Haunting Inc. All rights reversed.</p>
+        {isClient && <p>&copy; {year} 404 Haunting Inc. All rights reversed.</p>}
         <p>We are not liable for any emotional damage or accidental happiness.</p>
       </footer>
     </main>

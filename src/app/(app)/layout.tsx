@@ -23,13 +23,13 @@ import { useEffect, useState } from 'react';
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { username, logout, user, isClient } = useUser();
   const router = useRouter();
-  const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/40x40.png");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isClient && user?.profile?.profilePic) {
+    if (user?.profile?.profilePic) {
       setAvatarUrl(user.profile.profilePic);
     }
-  }, [isClient, user]);
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -85,7 +85,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
             <div className="flex items-center gap-3">
                  <Avatar>
-                    {isClient && <AvatarImage src={avatarUrl} data-ai-hint="glitched face" />}
+                    {isClient && avatarUrl && <AvatarImage src={avatarUrl} data-ai-hint="glitched face" />}
                     <AvatarFallback>{getInitials(username)}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col overflow-hidden">

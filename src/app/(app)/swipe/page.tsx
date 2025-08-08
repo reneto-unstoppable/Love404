@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -69,12 +70,15 @@ export default function SwipePage() {
     setCurrentIndex(0);
   }
 
-  if (!profiles[currentIndex]) {
+  if (!isClient || !profiles[currentIndex]) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
         <h2 className="font-headline text-2xl">You've run out of people to disappoint.</h2>
         <p className="text-muted-foreground">For now.</p>
-        <Button onClick={() => setCurrentIndex(0)} className="mt-4">
+        <Button onClick={() => {
+            setProfiles([...fakeProfiles].sort(() => Math.random() - 0.5));
+            setCurrentIndex(0);
+        }} className="mt-4">
           <RotateCcw className="mr-2" /> Try Again
         </Button>
       </div>

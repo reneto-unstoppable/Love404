@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -20,17 +21,20 @@ export function MatchFailClient() {
     
     // Play sad trombone sound
     const playSound = async () => {
-      // @ts-ignore
-      await Tone.start();
-      const synth = new Tone.Synth().toDestination();
-      const now = Tone.now();
-      synth.triggerAttackRelease("F4", "8n", now);
-      synth.triggerAttackRelease("E4", "8n", now + 0.2);
-      synth.triggerAttackRelease("D4", "8n", now + 0.4);
-      synth.triggerAttackRelease("C#4", "2n", now + 0.6);
+      try {
+        await Tone.start();
+        const synth = new Tone.Synth().toDestination();
+        const now = Tone.now();
+        synth.triggerAttackRelease("F4", "8n", now);
+        synth.triggerAttackRelease("E4", "8n", now + 0.2);
+        synth.triggerAttackRelease("D4", "8n", now + 0.4);
+        synth.triggerAttackRelease("C#4", "2n", now + 0.6);
+      } catch (e) {
+        console.error("Failed to play sound:", e);
+      }
     };
 
-    playSound().catch(console.error);
+    playSound();
 
     // Create sad, gray confetti
     const newConfetti: React.CSSProperties[] = Array.from({ length: 100 }).map(() => ({
@@ -53,7 +57,9 @@ export function MatchFailClient() {
     `;
     document.head.appendChild(styleSheet);
     return () => {
-        document.head.removeChild(styleSheet);
+        if (document.head.contains(styleSheet)) {
+            document.head.removeChild(styleSheet);
+        }
     };
 
   }, [isClient]);

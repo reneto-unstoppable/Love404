@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -17,10 +18,18 @@ import { useUser } from '@/hooks/use-user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Bot, Ghost, LogOut, ShieldQuestion, UserSquare } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { username, logout } = useUser();
+  const { username, logout, user, isClient } = useUser();
   const router = useRouter();
+  const [avatarUrl, setAvatarUrl] = useState("https://placehold.co/40x40.png");
+
+  useEffect(() => {
+    if (isClient && user?.profile?.profilePic) {
+      setAvatarUrl(user.profile.profilePic);
+    }
+  }, [isClient, user]);
 
   const handleLogout = () => {
     logout();
@@ -76,7 +85,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
             <div className="flex items-center gap-3">
                  <Avatar>
-                    <AvatarImage src="https://placehold.co/40x40.png" data-ai-hint="glitched face" />
+                    {isClient && <AvatarImage src={avatarUrl} data-ai-hint="glitched face" />}
                     <AvatarFallback>{getInitials(username)}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col overflow-hidden">

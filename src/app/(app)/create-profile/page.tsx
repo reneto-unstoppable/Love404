@@ -32,14 +32,9 @@ const profileSchema = z.object({
 export default function CreateProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { setProfile, getProfile } = useUser();
+  const { setProfile, getProfile, isClient } = useUser();
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [picStyle, setPicStyle] = useState({});
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -56,6 +51,9 @@ export default function CreateProfilePage() {
       const savedProfile = getProfile();
       if (savedProfile) {
         form.reset(savedProfile);
+        if(savedProfile.profilePic) {
+            setProfilePic(savedProfile.profilePic);
+        }
       }
     }
   }, [isClient, form, getProfile]);
@@ -70,7 +68,8 @@ export default function CreateProfilePage() {
       `blur(1px)`,
     ];
     setPicStyle({ filter: filters.join(' ') });
-    setProfilePic(`https://placehold.co/200x200.png?t=${new Date().getTime()}`);
+    const newPic = `https://placehold.co/200x200.png?t=${new Date().getTime()}`;
+    setProfilePic(newPic);
     toast({ title: 'Behold!', description: 'A face not even a mother could debug.' });
   };
   
@@ -151,8 +150,8 @@ export default function CreateProfilePage() {
                             min={3}
                             max={99}
                             step={1}
-                            defaultValue={field.value}
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => field.onChange(value)}
+                            value={field.value}
                         />
                     </FormControl>
                   </FormItem>
@@ -166,7 +165,7 @@ export default function CreateProfilePage() {
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel>Spirit Vegetable</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                             <SelectTrigger>
                             <SelectValue placeholder="Select a profound vegetable" />
@@ -194,7 +193,7 @@ export default function CreateProfilePage() {
                         <FormControl>
                         <RadioGroup
                             onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            value={field.value}
                             className="flex items-center space-x-4 pt-2"
                         >
                             <FormItem className="flex items-center space-x-2 space-y-0">

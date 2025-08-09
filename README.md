@@ -1,6 +1,3 @@
-Alright Reno — here’s your **404Love README** fully rewritten in the same style as the Fridge Whisperer sample, with your **team name, members, and screenshots** integrated.
-
----
 
 # Love404 💔
 

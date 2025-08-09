@@ -138,7 +138,8 @@ Then open [http://localhost:9002](http://localhost:9002) in your browser.
 
 ## Project Demo
 
-**Video:** *(Add your demo video link here)*
+**Video:**
+https://drive.google.com/file/d/1oJp5RCrlYd4HtDVSnd959Zyz5g7w8ISh/view?usp=sharing
 
 ---
 
